@@ -1,0 +1,156 @@
+#!/usr/bin/env python3
+"""
+Scam Shield — Community Report: submit & promote reports to patterns
+Usage:
+  python3 report_scam.py submit <user_id> <text> [url] [phone] [account] [modus]
+  python3 report_scam.py verify <report_id>
+  python3 report_scam.py reject <report_id>
+  python3 report_scam.py list [pending|verified|rejected]
+"""
+
+import sqlite3
+import json
+import sys
+import os
+
+DB_PATH = os.path.expanduser("~/scam-shield/data/scamshield.db")
+
+def submit_report(user_id, text, url=None, phone=None, account=None, modus=None):
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute("""
+        INSERT INTO community_reports (user_id, reported_text, reported_url, reported_phone, reported_account, modus)
+        VALUES (?, ?, ?, ?, ?, ?)
+    """, (user_id, text, url, phone, account, modus))
+    conn.commit()
+    report_id = c.lastrowid
+
+    # Auto-verify: jika sudah ada 3+ laporan dengan teks serupa, otomatis verified
+    c.execute("""
+        SELECT COUNT(*) FROM community_reports
+        WHERE reported_text = ? AND status IN ('pending', 'verified')
+    """, (text,))
+    similar_count = c.fetchone()[0]
+
+    if similar_count >= 3:
+        # Promote ke verified dan masukkan ke scam_patterns
+        c.execute("UPDATE community_reports SET status = 'verified' WHERE reported_text = ?", (text,))
+        # Tambah ke patterns
+        try:
+            c.execute("""
+                INSERT OR IGNORE INTO scam_patterns (type, pattern, modus, source, confidence, report_count)
+                VALUES ('keyword', ?, ?, 'community', 0.7, ?)
+            """, (text.lower()[:200], modus, similar_count))
+        except Exception:
+            pass
+
+        if url:
+            try:
+                from urllib.parse import urlparse
+                domain = urlparse(url).netloc.lower()
+                c.execute("""
+                    INSERT OR IGNORE INTO scam_patterns (type, pattern, modus, source, confidence)
+                    VALUES ('domain_scam', ?, ?, 'community', 0.8)
+                """, (domain, modus))
+            except Exception:
+                pass
+
+        conn.commit()
+        print(json.dumps({
+            "status": "auto_verified",
+            "report_id": report_id,
+            "message": f"Laporan ke-{similar_count} untuk pola ini. Otomatis terverifikasi dan masuk database."
+        }, ensure_ascii=False))
+    else:
+        conn.close()
+        print(json.dumps({
+            "status": "submitted",
+            "report_id": report_id,
+            "message": f"Laporan diterima (ID: {report_id}). Terima kasih sudah membantu melindungi komunitas!"
+        }, ensure_ascii=False))
+
+def verify_report(report_id):
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute("SELECT * FROM community_reports WHERE id = ?", (report_id,))
+    report = c.fetchone()
+    if not report:
+        print(json.dumps({"error": f"Report {report_id} not found"}))
+        return
+
+    c.execute("UPDATE community_reports SET status = 'verified' WHERE id = ?", (report_id,))
+
+    # Promote reported content ke scam_patterns
+    reported_text = report[2]
+    reported_url = report[3]
+    modus = report[6]
+
+    if reported_text:
+        c.execute("""
+            INSERT OR IGNORE INTO scam_patterns (type, pattern, modus, source, confidence)
+            VALUES ('keyword', ?, ?, 'community', 0.75)
+        """, (reported_text.lower()[:200], modus))
+
+    if reported_url:
+        try:
+            from urllib.parse import urlparse
+            domain = urlparse(reported_url).netloc.lower()
+            c.execute("""
+                INSERT OR IGNORE INTO scam_patterns (type, pattern, modus, source, confidence)
+                VALUES ('domain_scam', ?, ?, 'community', 0.85)
+            """, (domain, modus))
+        except Exception:
+            pass
+
+    conn.commit()
+    conn.close()
+    print(json.dumps({"status": "verified", "report_id": report_id}))
+
+def reject_report(report_id):
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute("UPDATE community_reports SET status = 'rejected' WHERE id = ?", (report_id,))
+    conn.commit()
+    conn.close()
+    print(json.dumps({"status": "rejected", "report_id": report_id}))
+
+def list_reports(status_filter=None):
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    if status_filter:
+        c.execute("SELECT id, user_id, reported_text, reported_url, modus, status, created_at FROM community_reports WHERE status = ? ORDER BY created_at DESC LIMIT 20", (status_filter,))
+    else:
+        c.execute("SELECT id, user_id, reported_text, reported_url, modus, status, created_at FROM community_reports ORDER BY created_at DESC LIMIT 20")
+
+    reports = []
+    for row in c.fetchall():
+        reports.append({
+            "id": row[0], "user_id": row[1], "text": row[2][:100] if row[2] else None,
+            "url": row[3], "modus": row[4], "status": row[5], "created_at": row[6]
+        })
+    conn.close()
+    print(json.dumps({"reports": reports, "count": len(reports)}, ensure_ascii=False))
+
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print("Usage: python3 report_scam.py <action> [args...]")
+        sys.exit(1)
+
+    action = sys.argv[1]
+    if action == "submit" and len(sys.argv) >= 4:
+        submit_report(
+            user_id=sys.argv[2],
+            text=sys.argv[3],
+            url=sys.argv[4] if len(sys.argv) > 4 else None,
+            phone=sys.argv[5] if len(sys.argv) > 5 else None,
+            account=sys.argv[6] if len(sys.argv) > 6 else None,
+            modus=sys.argv[7] if len(sys.argv) > 7 else None
+        )
+    elif action == "verify" and len(sys.argv) >= 3:
+        verify_report(int(sys.argv[2]))
+    elif action == "reject" and len(sys.argv) >= 3:
+        reject_report(int(sys.argv[2]))
+    elif action == "list":
+        list_reports(sys.argv[2] if len(sys.argv) > 2 else None)
+    else:
+        print("Invalid action. Use: submit, verify, reject, list")

@@ -1,0 +1,38 @@
+{
+  "description": "Test set Scam Shield - pesan scam Indonesia berdasarkan modus yang umum dilaporkan, plus pesan sah sebagai kontrol false positive.",
+  "cases": [
+    {"id": 1,  "expect": "scam", "modus": "hadiah_palsu", "text": "SELAMAT! Nomor Anda terpilih sebagai pemenang undian Rp150.000.000 dari program tahunan kami. Hubungi WA 0812-3456-7890 untuk klaim."},
+    {"id": 2,  "expect": "scam", "modus": "hadiah_palsu", "text": "Anda mendapat hadiah utama 1 unit mobil. Klik http://undian-berhadiah2026.xyz dan isi data diri Anda untuk proses klaim."},
+    {"id": 3,  "expect": "scam", "modus": "hadiah_palsu", "text": "Pengumuman pemenang! Transfer biaya administrasi Rp750.000 ke rekening 8871234455 a/n Panitia Undian agar hadiah segera dikirim."},
+    {"id": 4,  "expect": "scam", "modus": "phishing", "text": "Nasabah Yth, rekening Anda akan diblokir dalam 1x24 jam. Verifikasi sekarang di http://bri-verifikasi-nasabah.xyz"},
+    {"id": 5,  "expect": "scam", "modus": "phishing", "text": "Kode OTP Anda 884213. JANGAN berikan ke siapa pun. Jika bukan Anda, konfirmasi ke petugas kami di 0857-1122-3344."},
+    {"id": 6,  "expect": "scam", "modus": "phishing", "text": "Akun mobile banking Anda terdeteksi login dari perangkat lain. Amankan sekarang: http://m-banking-secure.top/login"},
+    {"id": 7,  "expect": "scam", "modus": "phishing", "text": "Mohon kirimkan kode verifikasi 6 digit yang baru masuk ke HP Bapak untuk validasi data nasabah. Terima kasih."},
+    {"id": 8,  "expect": "scam", "modus": "investasi_bodong", "text": "Modal 1 juta profit 300rb per hari, dijamin cuan tanpa risiko. Slot terbatas hanya hari ini. Daftar sekarang!"},
+    {"id": 9,  "expect": "scam", "modus": "investasi_bodong", "text": "Robot trading kami sudah terbukti 100% profit. Transfer ke rekening pribadi admin, withdraw kapan saja. Join grup VIP sekarang."},
+    {"id": 10, "expect": "scam", "modus": "investasi_bodong", "text": "Investasi crypto dijamin balik modal 2 minggu. Sudah ribuan member untung. Buruan sebelum kuota habis!"},
+    {"id": 11, "expect": "scam", "modus": "pinjol_ilegal", "text": "Butuh dana cepat? Cair 10 juta tanpa BI checking, tanpa jaminan, proses 5 menit. Cukup kirim foto KTP dan swafoto."},
+    {"id": 12, "expect": "scam", "modus": "pinjol_ilegal", "text": "Pinjaman online langsung cair tanpa survei. Bunga ringan. Hubungi admin di http://dana-kilat-cair.xyz"},
+    {"id": 13, "expect": "scam", "modus": "kurir_palsu", "text": "Paket Anda tertahan di bea cukai. Bayar denda Rp350.000 ke rekening 1122334455 agar paket dapat dikirim hari ini."},
+    {"id": 14, "expect": "scam", "modus": "kurir_palsu", "text": "Halo kak, ini kurir. Silakan cek foto paket ya: resi_paket.apk. Mohon dibuka untuk konfirmasi alamat."},
+    {"id": 15, "expect": "scam", "modus": "penipuan_kerja", "text": "Lowongan kerja part time dari rumah, gaji harian 500rb. Transfer dulu 500rb untuk aktivasi akun kerja Anda."},
+    {"id": 16, "expect": "scam", "modus": "penipuan_kerja", "text": "Selamat, CV Anda lolos seleksi tanpa wawancara. Untuk aktivasi akun kerja, silakan setor deposit ke rekening perusahaan."},
+    {"id": 17, "expect": "scam", "modus": "penipuan_kerja", "text": "Kerja hanya like video, dibayar 50rb per tugas. Daftar dan isi saldo dulu untuk membuka tugas berbayar."},
+    {"id": 18, "expect": "scam", "modus": "impersonasi", "text": "Ma, ini anakmu. HP ku hilang, ini nomor baru. Tolong transfer 3 juta sekarang ke rekening temanku, nanti kujelaskan."},
+    {"id": 19, "expect": "scam", "modus": "impersonasi", "text": "Pak, saya Direktur. Saya sedang rapat dan tidak bisa ditelepon. Tolong segera transfer dana ke rekening ini, mendesak."},
+    {"id": 20, "expect": "scam", "modus": "impersonasi", "text": "Selamat siang, saya dari kepolisian. Anak Anda terlibat kasus. Untuk penyelesaian damai, transfer sekarang ke rekening ini."},
+    {"id": 21, "expect": "scam", "modus": "love_scam", "text": "Sayang, aku mau kirim paket hadiah dari luar negeri untukmu. Tapi tertahan bea cukai, tolong bayarkan dulu 5 juta ya."},
+    {"id": 22, "expect": "scam", "modus": "phishing", "text": "Akun Anda akan dinonaktifkan. Login segera untuk verifikasi data: http://192.168.44.12/verifikasi-akun"},
+    {"id": 23, "expect": "scam", "modus": "hadiah_palsu", "text": "Anda terpilih menerima subsidi bantuan pemerintah Rp2.400.000. Daftar di http://bantuan-sosial-resmi.top dan isi nomor rekening."},
+    {"id": 24, "expect": "scam", "modus": "investasi_bodong", "text": "Bergabunglah dengan grup saham VIP kami. Sinyal akurat 99%, profit dijamin. Setor minimal 5 juta ke rekening admin."},
+
+    {"id": 25, "expect": "aman", "modus": null, "text": "Halo, besok jadi meeting jam 10 di kantor ya. Jangan lupa bawa laporan bulanan."},
+    {"id": 26, "expect": "aman", "modus": null, "text": "Pak, saya sudah transfer pembayaran invoice bulan ini. Mohon dicek dan dikonfirmasi. Terima kasih."},
+    {"id": 27, "expect": "aman", "modus": null, "text": "Selamat ulang tahun! Semoga sehat selalu dan sukses terus. Nanti malam kita makan bareng ya."},
+    {"id": 28, "expect": "aman", "modus": null, "text": "Paket kamu sudah dikirim dengan nomor resi JX8842119. Cek statusnya di aplikasi ya."},
+    {"id": 29, "expect": "aman", "modus": null, "text": "Reminder: tagihan listrik bulan ini jatuh tempo tanggal 20. Silakan bayar lewat aplikasi resmi PLN."},
+    {"id": 30, "expect": "aman", "modus": null, "text": "Bu, anak ibu hari ini tidak masuk sekolah ya? Mohon konfirmasinya. Terima kasih, wali kelas."},
+    {"id": 31, "expect": "aman", "modus": null, "text": "Barang masuk gudang sudah saya catat semua. Stok aman untuk minggu depan."},
+    {"id": 32, "expect": "aman", "modus": null, "text": "Undangan rapat RT hari Minggu jam 8 pagi di balai warga. Mohon kehadirannya."}
+  ]
+}
